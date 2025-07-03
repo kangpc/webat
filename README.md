@@ -356,6 +356,6 @@ A: 支持 Python 脚本（.py）和 Excel 关键字表（.xls）。
 
 ---
 
-**项目维护**: yiyan  
+**项目维护**: vx:yiyan_k  
 **最后更新**: 2022年12月  
 **官方网站**: [项目地址](https://github.com/yourorg/at-ui) 
