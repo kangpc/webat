@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>云元素库</title>
+    <link href="http://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/static/bitbug_favicon.ico">
+    <script src="/static/index_css/js/jquery-2.1.1.min.js"></script>
+</head>
+<body>
+<nav class="navbar navbar-default  navbar-inverse" role="navigation" style="border-radius: 0;box-shadow: 4px 4px 6px grey;background: linear-gradient(to top,black,#626262)">
+    <div class="navbar-header">
+         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button>
+        <a class="navbar-brand" href="#" style="margin-right: 25px"></a>
+    </div>
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+            <li>
+                 <a href="/case_list/{{ duan.id }}/">{{ duan.name }}</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+
+<table class="table table-bordered" style="width: 90%;margin-left: 5%">
+    <caption style="text-align: center"> 端：【 <span style="color: mediumvioletred">{{ duan.name }}</span> 】 的元素如下:  <a href="/add_object/{{ duan.id }}/">新增元素</a></caption>
+    <thead >
+        <tr style="background: linear-gradient(to right,#e4faff,white,#ffe2ee)">
+            <th style="width: 50px">id</th>
+            <th style="width: 150px">名字</th>
+            <th style="width: 150px">所在页面</th>
+            <th style="width: 150px">临时定位方式</th>
+            <th style="width: 150px">临时定位值</th>
+            <th>标签源码</th>
+            <th  style="width: 50px">下标</th>
+            <th style="width: 300px">操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for i in objects %}
+            <tr>
+                <td>{{ i.id }}</td>
+                <td><input id="name_input_{{ i.id }}" type="text" value="{{ i.name }}"></td>
+                <td><input id="page_input_{{ i.id }}" type="text" value="{{ i.page }}"></td>
+
+                <td><input id="tmp_method_input_{{ i.id }}" type="text" value="{{ i.tmp_method }}"></td>
+                <td><input id="tmp_value_input_{{ i.id }}" type="text" value="{{ i.tmp_value }}"></td>
+
+                <td style="color: mediumvioletred"><input id="tag_input_{{ i.id }}" style="width: 300px" type="text" value="{{ i.tag }}"></td>
+                <td style="font-size:x-small"><input id="index_input_{{ i.id }}" style="width: 50px" type="text" value="{{ i.index }}"></td>
+                <td>
+                    <div class="btn-group btn-group-xs">
+                        <button onclick="save_object('{{ i.id }}')" type="button" class="btn btn-default">保存</button>
+                        <button onclick="javascript:document.location.href='/del_object/{{ i.id }}/'" type="button" class="btn btn-danger">删除</button>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<script>
+    function save_object(id) {
+        $.get('/save_object/',{
+            "id":id,
+            "name":document.getElementById('name_input_'+id).value,
+            "page":document.getElementById('page_input_'+id).value,
+
+            "tmp_method":document.getElementById('tmp_method_input_'+id).value,
+            "tmp_value":document.getElementById('tmp_value_input_'+id).value,
+
+            "tag": document.getElementById('tag_input_'+id).value,
+            "index": document.getElementById('index_input_'+id).value
+        },function (ret) {
+            document.location.reload()
+        })
+    }
+</script>
+
+</body>
+</html>

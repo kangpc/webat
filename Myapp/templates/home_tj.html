@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="/static/home_tj/css/normalize.css" /><!--CSS RESET-->
+	<style type="text/css">
+		.htmleaf-content{
+			width: 50%;
+			margin: 20px auto;
+		}
+	</style>
+</head>
+<body>
+		<div class="htmleaf-content" style="width: 500px">
+		  <svg class="line-chart"></svg>
+		</div>
+
+	
+	<script src="/static/home_tj/dist/chart.xkcd.min.js"></script>
+	<script type="text/javascript">
+	const svgLine = document.querySelector('.line-chart')
+	  const lineChart = new chartXkcd.Line(svgLine, {
+	    title: '各个端的每日启动脚本的次数', // optional
+	    xLabel: 'Month', // optional
+	    yLabel: '$ Dollors', // optional
+	    data: {
+	      labels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
+	      datasets: [{
+	        label: '第一个端',
+	        data: [30, 70, 200, 300, 500, 800, 1500, 2900, 5000, 8000],
+	      }, {
+	        label: '第二个端',
+	        data: [50, 1, 320, 70, 80, 1100, 50, 80, 4330, 150],
+	      }, {
+	        label: '第三个端',
+	        data: [520, 111, 3320, 70, 840, 1400, 50, 820, 430, 1520],
+	      }
+          ],
+	    },
+	    options: { // optional
+	      yTickCount: 3,
+	      legendPosition: chartXkcd.config.positionType.upLeft
+	    }
+	  });
+	</script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+
+    <link rel="shortcut icon" href="/static/bitbug_favicon.ico">
+    <link rel="stylesheet" type="text/css" href="/static/home_css/css/normalize.css" /><!--CSS RESET-->
+	<link rel="stylesheet" href="/static/home_css/style.css">
+
+
+</head>
+
+<body >
+
+
+<div class="page-wrapper">
+
+    {% include 'menu.html' %}
+     <main class="page-content">
+          <h1 style="text-align: center">欢迎使用 web 自动化集成平台</h1>
+          <h4 style="text-align: center">请选择下列端，或 <a href="#" onclick="add_duan()">新增端</a> </h4>
+
+        <main id=app style="text-align: center">
+        {% for i in duan %}
+             <mochi-box shiba="okaka" pop mood="excited" left-ear="up" right-ear="flat" style="height: 100px;text-align: center">
+                <h2><a href="/case_list/{{ i.id }}/" style="color: white;text-decoration:none">{{ i.name }}</a></h2>
+                 <br><br>
+                <p class="shop kotobuki" title="kotobuki" style="border-radius:50px 5px 50px 50px ;position: absolute;bottom:-28px;background-color: #73b8b9">管理者：{{ i.user }}
+                <span style="font-size: xx-small" >
+                  <a href="#" onclick="del_duan('{{ i.id }}')">删除</a></span></p>
+              </mochi-box>
+          {% endfor %}
+        </main>
+
+        {% include 'home_tj.html' %}
+     </main><!-- page-content" -->
+
+ </div><!-- page-wrapper -->
+
+
+<div id="add_duan_div" style="display: none;position: absolute;top: 100px;left:25% ;width: 50%;background-color: #ecffff;
+                                padding: 10px;box-shadow: 4px 4px 6px #c4c4c9;text-align: center">
+    <div class="input-group">
+        <span class="input-group-addon" >端名</span>
+        <input id="duan_name_input" type="text" class="form-control"  placeholder="请输入新端的名字">
+    </div>
+
+    <div class="input-group">
+        <span class="input-group-addon">host</span>
+        <input  id="duan_host_input"  type="text" class="form-control" placeholder="请输入新端的host,多个请用逗号或分号隔开">
+    </div>
+
+
+    <div class="btn-group" style="margin-top: 5px">
+        <button onclick="save_duan()" type="button" class="btn btn-default">保存</button>
+        <button onclick="javascript:document.location.reload()" type="button" class="btn btn-default">取消</button>
+    </div>
+
+</div>
+
+
+<script>
+        function add_duan() {
+            document.getElementById('add_duan_div').style.display ='block';
+        }
+        function save_duan() {
+            // 获取三个输入框内容
+            var duan_name = document.getElementById('duan_name_input').value;
+            var duan_host = document.getElementById('duan_host_input').value;
+            // 把这些数据传递给后端
+            $.get(
+                    "/save_duan/", // http请求的host
+                    {
+                        "duan_name":duan_name,
+                        "duan_host":duan_host,
+                    }, // 请求体
+                    function (ret) {  // 请求返回之后的动作
+                        document.location.reload() //刷新页面
+                    }
+            )
+        }
+        function del_duan(did) {
+            if( confirm('确认要删除吗?') == false){
+                return
+            }
+            // 真实删除
+            $.get('/del_duan/'+did+'/',
+            {},function (ret) {
+              document.location.reload()
+            })
+        }
+</script>
+<script src="https://cdn.bootcss.com/vue/2.5.2/vue.min.js"></script>
+{#<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>#}
+{#<script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.17/vue.min.js'></script>#}
+<script  src="/static/home_css/script.js"></script>
+</body>
+</html>

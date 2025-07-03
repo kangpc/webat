@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>用例列表页面</title>
+    <link href="http://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="shortcut icon" href="/static/bitbug_favicon.ico">
+</head>
+<body>
+
+<nav class="navbar navbar-default  navbar-inverse" role="navigation" style="border-radius: 0;box-shadow: 4px 4px 6px grey;background: linear-gradient(to top,black,#626262)">
+    <div class="navbar-header">
+         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button>
+        <a class="navbar-brand" href="#" style="margin-right: 25px"></a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+            <li>
+                 <a href="/home/">Home</a>
+            </li>
+
+
+            <li class="dropdown">
+                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">并发<strong class="caret"></strong></a>
+                <ul class="dropdown-menu">
+                    <li>
+                         <a href="#" onclick="bf_case()">并发运行</a>
+                    </li>
+                    <li>
+                         <a href="#" onclick="look_reports()">报告总结</a>
+                    </li>
+                    <li class="divider">
+                    </li>
+                    <li>
+                         <a href="/download_reports/{{ duan.id }}/" target="_blank">导出报告</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="dropdown">
+                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">监控设置<strong class="caret"></strong></a>
+                <ul class="dropdown-menu">
+                    <li>
+                         <a href="#" onclick="set_monitor()">设置</a>
+                    </li>
+                    <li class="divider">
+                    </li>
+                    <li>
+                         <a href="/start_monitor/{{ duan.id }}/">启动</a>
+                    </li>
+                    <li>
+                         <a href="/stop_monitor/{{ duan.id }}/">关闭</a>
+                    </li>
+                </ul>
+            </li>
+             <li class="dropdown">
+                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">端设置<strong class="caret"></strong></a>
+                <ul class="dropdown-menu">
+                    <li>
+                         <a href="#" onclick="set_duan()">设置</a>
+                    </li>
+                    <li class="divider">
+                    </li>
+                    <li>
+                         <a href="/download_client/{{ duan.id }}/" target="_blank">下载本地调试包</a>
+                    </li>
+                    <li class="divider">
+                    </li>
+                    <li>
+                        <form action="/upload_tools/{{ duan.id }}/" method="post" enctype="multipart/form-data">
+                            <input type="file" name="file_tools" style="padding-left: 5px">
+                            <button class="btn" type="submit" style="width: 100%;margin-top: 5px">上传到public</button>
+                        </form>
+                    </li>
+                </ul>
+            </li>
+
+            <li>
+                 <a href="/object_in/{{ duan.id }}/">云元素库</a>
+            </li>
+
+        </ul>
+
+        <form class="navbar-form navbar-left" action="/case_list/{{ duan.id }}/" role="search">
+            <div class="form-group">
+                <input type="text" name="kwords" class="form-control" placeholder="搜索用例关键字" />
+            </div>
+            <button type="submit" class="btn btn-default">Search</button>
+        </form>
+        <ul class="nav navbar-nav navbar-right">
+            <li style="margin-right: 10px">
+                <select class="form-control" name="" id="run_host" style="margin-top: 9px">
+
+                    {% for i in hosts %}
+                        <option value="{{ i }}">环境：{{ i }}</option>
+                    {% endfor %}
+
+                </select>
+            </li>
+        </ul>
+
+    </div>
+
+</nav>
+<script>
+    function look_reports() {
+        $.get('/look_reports/',{
+            "duan_id":"{{ duan.id }}"
+        },function (ret) {
+            alert(ret)
+        })
+    }
+</script>
+
+
+<div class="page-wrapper">
+    {% include 'menu.html' %}
+     <main class="page-content">
+        <table class="table table-bordered" style="width: 70%;margin-left: 15%">
+            <caption style="text-align: center"> 端：【 <span style="color: mediumvioletred">{{ duan.name }}</span> 】 的用例如下:  <a href="/add_case/{{ duan.id }}/">新增用例</a></caption>
+            <thead >
+                <tr style="background: linear-gradient(to right,#e4faff,white,#ffe2ee)">
+                    <th style="width: 50px">id</th>
+                    <th style="width: 50px">并发</th>
+                    <th style="width: 50px">监控</th>
+                    <th>名字</th>
+                    <th>脚本</th>
+                    <th style="width: 200px">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in cases %}
+                    <tr>
+                        <td>{{ i.id }}</td>
+                        <td>{{ i.BF }}</td>
+                        <td>{{ i.JK }}</td>
+                        <td style="color: mediumvioletred">{{ i.name }}</td>
+                        <td style="font-size:x-small">{{ i.py }}</td>
+                        <td>
+                            <div class="btn-group btn-group-xs">
+                                <button onclick="set_case('{{ i.id }}')" type="button" class="btn btn-default">设置</button>
+                                <button id="btn_run_{{ i.id }}" onclick="run_case('{{ i.id }}')" type="button" class="btn btn-default">运行</button>
+                                <button onclick="javascript:document.location.href='/look_report/{{ i.id }}/'" type="button" class="btn btn-default">报告</button>
+                                <button onclick="javascript:document.location.href='/del_case/{{ i.id }}/'" type="button" class="btn btn-danger">删除</button>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="pagination" style="width: 100%;text-align: center">
+            <span class="step-links">
+                {% if cases.has_previous %}
+                    <a href="/case_list/{{ duan.id }}/?page={{ cases.previous_page_number }}" aria-labe="Previous">
+                        <span aria-hidden="true"><<</span>
+                    </a>&nbsp;&nbsp;
+                {% endif %}
+                {% for pg in cases.paginator.page_range %}
+                    {% if cases.number == pg  %}
+                        <a href="/case_list/{{ duan.id }}/?page={{ pg }}">第{{ pg }}页</a>&nbsp;&nbsp;&nbsp;
+                    {% else %}
+                        <a href="/case_list/{{ duan.id }}/?page={{ pg }}">{{ pg }}</a>&nbsp;&nbsp;
+                    {% endif %}
+                {% endfor %}
+                {% if cases.has_next %}
+                    <a href="/case_list/{{ duan.id }}/?page={{ cases.next_page_number }}" aria-label="Next">
+                        &nbsp;&nbsp;<span>>></span>
+                    </a>
+                {% endif %}
+            </span>
+        </div>
+     </main><!-- page-content" -->
+
+ </div><!-- page-wrapper -->
+
+
+
+<div id="case_div" style="z-index: 999;display: none;width: 70%;position: fixed;left: 15%;top:100px;background-color: #dddddd;border-radius: 3px;
+            box-shadow: 4px 4px 6px grey">
+        <div class="input-group input-group-sm" style="">
+            <span class="input-group-addon">用例名称</span>
+            <input id="case_name" type="text" class="form-control" placeholder="">
+        </div>
+        <div class="input-group input-group-sm" style="margin-top: 5px">
+            <span class="input-group-addon">重试次数</span>
+            <input id="case_counts" type="text" class="form-control" placeholder="">
+        </div>
+        <div class="input-group input-group-sm" style="margin-top: 5px">
+            <span class="input-group-addon">并发用例</span>
+            <span class="input-group-addon" style="width: 3px;background-color: white">
+                <label>
+                    <input id="bf_true" type="radio" name="radio_bf" value="True">
+                    <span style="font-size: medium">是</span>
+                </label>
+            </span>
+            <span class="input-group-addon" style="width: 3px;background-color: white">
+                <label>
+                    <input id="bf_false" type="radio" name="radio_bf" value="False">
+                    <span style="font-size: medium">否</span>
+                </label>
+            </span>
+
+        </div>
+        <div class="input-group input-group-sm" style="margin-top: 5px">
+            <span class="input-group-addon">监控用例</span>
+            <span class="input-group-addon" style="width: 3px;background-color: white">
+                <label>
+                    <input id="jk_true" type="radio" name="radio_jk" value="True">
+                    <span style="font-size: medium">是</span>
+                </label>
+            </span>
+            <span class="input-group-addon" style="width: 3px;background-color: white">
+                <label>
+                    <input id="jk_false" type="radio" name="radio_jk" value="False">
+                    <span style="font-size: medium">否</span>
+                </label>
+            </span>
+
+        </div>
+        <div class="input-group input-group-sm" style="margin-top: 5px">
+            <span class="input-group-addon">上传脚本</span>
+            <span class="input-group-addon" style="background-color: white;width:3px" id="case_script_name"></span>
+            <span class="input-group-addon" style="background-color: white;width:3px">
+                <form id="upload_py" action="" method="post" enctype="multipart/form-data">
+                    <input type="file" name="fileUpload">
+                </form>
+            </span>
+
+
+        </div>
+        <div class="input-group input-group-sm" style="width: 100%;margin-top: 5px">
+            <button onclick="javascript:document.location.reload()" class="btn btn-default" style="outline: none;width: 50%">取消</button>
+            <button onclick="save_case()" class="btn btn-success" style="outline: none;width: 50%">保存</button>
+        </div>
+    <input type="text" value="" id="case_id" style="display: none">
+</div>
+<script>
+    function set_case(id) {
+        // 显示这个弹层
+        document.getElementById('case_div').style.display = 'block';
+        // 去后台拿数据
+        $.get('/set_case/',{"id":id},function (ret) {
+            console.log(ret);
+            document.getElementById('case_name').value = ret.name;
+            document.getElementById('case_counts').value = ret.counts;
+            document.getElementById('bf_'+ret.BF).checked = 'checked';
+            document.getElementById('jk_'+ret.JK).checked = 'checked';
+            document.getElementById('case_id').value = ret.id;
+            document.getElementById('case_script_name').innerText = ret.py;
+            document.getElementById('upload_py').action = '/upload_py/'+id+'/';
+        })
+    }
+    function save_case() {
+        // 确定当前打开的是哪个用例
+        case_id = document.getElementById('case_id').value;
+        // 获取弹层的数据
+        // 把数据给服务器
+        $.get('/save_case/',{
+            "case_id":case_id,
+            "case_name": document.getElementById('case_name').value,
+            "case_counts": $('#case_counts').val(),
+            "BF":$(':radio[name="radio_bf"]:checked').val(),
+            "JK":$(':radio[name="radio_jk"]:checked').val(),
+        },function (ret) {
+          var bd = document.getElementById('upload_py');
+            bd.submit();
+        })
+    }
+    function run_case(case_id) {
+        document.getElementById('btn_run_'+case_id).innerText = '运行中...';
+        $.get("/run_case/",{
+            "case_id":case_id,
+            "host": document.getElementById('run_host').value,
+        },function (ret) {
+          if(ret != 'Error'){
+              alert('Success!')
+          }else{
+              alert('Fail!')
+          }
+            document.getElementById('btn_run_'+case_id).innerText = '运行';
+        })
+    }
+    function bf_case() {
+        $.get('/bf_case/{{ duan.id }}/',{
+            "host": document.getElementById('run_host').value,
+        },function (ret) {
+           alert(ret)
+        })
+    }
+</script>
+
+<div id="monitor_div" style="z-index: 999;display: none;width: 70%;position: fixed;left: 15%;top:100px;background-color: #dddddd;border-radius: 3px;
+            box-shadow: 4px 4px 6px grey">
+
+        <div class="input-group input-group-sm" style="">
+            <span class="input-group-addon">监控域名</span>
+            <input  list="m_hosts" id="monitor_host" type="text" class="form-control" placeholder="" value="{{ duan.monitor_host }}">
+        </div>
+
+        <datalist id="m_hosts">
+          {% for i in hosts %}
+              <option value="{{ i }}">选择这个环境</option>
+            {% endfor %}
+        </datalist>
+
+
+        <div class="input-group input-group-sm" style="">
+            <span class="input-group-addon">间隔时间</span>
+            <input id="monitor_time" type="text" class="form-control" placeholder="" value="{{ duan.monitor_time }}">
+        </div>
+        <div class="input-group input-group-sm" style="">
+                <span class="input-group-addon">手机号码</span>
+                <input id="monitor_phone" type="text" class="form-control" placeholder="多个之间用英文逗号隔开" value="{{ duan.monitor_phone }}">
+            </div>
+        <div class="input-group input-group-sm" style="">
+                <span class="input-group-addon">邮件地址</span>
+                <input id="monitor_email" type="text" class="form-control" placeholder="多个之间用英文逗号隔开" value="{{ duan.monitor_email }}">
+            </div>
+        <div class="input-group input-group-sm" style="">
+                <span class="input-group-addon">钉钉地址</span>
+            <input id="monitor_dingtalk" type="text" class="form-control" placeholder="" value="{{ duan.monitor_dingtalk }}">
+        </div>
+        <div class="input-group input-group-sm" style="width: 100%;margin-top: 5px">
+            <button onclick="javascript:document.location.reload()" class="btn btn-default" style="outline: none;width: 50%">取消</button>
+            <button onclick="save_monitor()" class="btn btn-success" style="outline: none;width: 50%">保存</button>
+        </div>
+
+</div>
+<script>
+    function set_monitor() {
+        // 显示这个弹层
+        document.getElementById('monitor_div').style.display = 'block';
+    }
+    function save_monitor() {
+        // 把数据给服务器
+        $.get('/save_monitor/',{
+            "monitor_host":document.getElementById('monitor_host').value,
+            "monitor_time":document.getElementById('monitor_time').value,
+            "monitor_phone":document.getElementById('monitor_phone').value,
+            "monitor_email":document.getElementById('monitor_email').value,
+            "monitor_dingtalk":document.getElementById('monitor_dingtalk').value,
+            "duan_id" : "{{ duan.id }}",
+        },function (ret) {
+          document.location.reload()
+        })
+    }
+</script>
+
+<div id="duan_div" style="z-index: 999;display: none;width: 70%;position: fixed;left: 15%;top:100px;background-color: #dddddd;border-radius: 3px;
+            box-shadow: 4px 4px 6px grey">
+        <div class="input-group input-group-sm" style="">
+            <span class="input-group-addon">名字</span>
+            <input id="duan_name" type="text" class="form-control" placeholder="" value="{{ duan.name }}">
+        </div>
+        <div class="input-group input-group-sm" style="">
+            <span class="input-group-addon">域名</span>
+            <input id="duan_host" type="text" class="form-control" placeholder="多个之间用英文逗号隔开" value="{{ duan.host }}">
+        </div>
+
+        <div class="input-group input-group-sm" style="">
+            <span class="input-group-addon">管理</span>
+            <input id="duan_user" type="text" class="form-control" placeholder="多个管理员之间用英文逗号隔开" value="{{ duan.user }}">
+        </div>
+
+         <div class="input-group input-group-sm" style="">
+            <span class="input-group-addon">并发</span>
+            <input id="duan_max_bf" type="text" class="form-control" placeholder="该端端最大并发次数" value="{{ duan.max_bf }}">
+        </div>
+
+        <div class="input-group input-group-sm" style="width: 100%;margin-top: 5px">
+            <button onclick="javascript:document.location.reload()" class="btn btn-default" style="outline: none;width: 50%">取消</button>
+            <button onclick="save_duan()" class="btn btn-success" style="outline: none;width: 50%">保存</button>
+        </div>
+</div>
+<script>
+    function set_duan() {
+        // 显示这个弹层
+        document.getElementById('duan_div').style.display = 'block';
+    }
+    function save_duan() {
+        // 把数据给服务器
+        $.get('/save_old_duan/',{
+            "name":document.getElementById('duan_name').value,
+            "host":document.getElementById('duan_host').value,
+            "user":document.getElementById('duan_user').value,
+            "max_bf":document.getElementById('duan_max_bf').value,
+
+            "duan_id" : "{{ duan.id }}",
+        },function (ret) {
+          document.location.reload()
+        })
+    }
+</script>
+
+
+
+</body>
+</html>
